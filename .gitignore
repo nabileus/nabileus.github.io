@@ -40,3 +40,6 @@ out/
 # Temporary files
 *.tmp
 *.temp
+
+# Astro
+.astro/

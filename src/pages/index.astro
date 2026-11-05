@@ -1,0 +1,334 @@
+---
+import { Picture, getImage } from 'astro:assets';
+import { Icon } from 'astro-icon/components';
+import headshot from '../assets/headshot.webp';
+import beamcalcIcon from '../assets/app-beamcalc.webp';
+import justonereelIcon from '../assets/app-justonereel.webp';
+import { Image } from 'astro:assets';
+import '../styles/global.css';
+import {
+  profile, about, interests, thesis, competition, apps,
+  publications, experience, education, skills, socials,
+} from '../data';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const title = `${profile.name} · Structural Engineering, BUET`;
+const description = `${profile.role}. GFRP & lightweight concrete research, machine learning in civil engineering. ${profile.status}.`;
+const ogImage = await getImage({ src: headshot, width: 600, height: 600, format: 'jpg' });
+const ogUrl = new URL(ogImage.src, Astro.site).href;
+
+const appIcons = { beamcalc: beamcalcIcon, justonereel: justonereelIcon } as const;
+const playUrl = (id: string) => `https://play.google.com/store/apps/details?id=${id}`;
+
+const nav = [
+  ['about', 'About'],
+  ['research', 'Research'],
+  ['apps', 'Apps'],
+  ['publications', 'Publications'],
+  ['experience', 'Experience'],
+  ['skills', 'Skills'],
+  ['contact', 'Contact'],
+];
+
+const highlightMe = (authors: string) =>
+  authors.replace('M. H. Islam', '<b>M. H. Islam</b>');
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: profile.name,
+  alternateName: profile.nickname,
+  email: `mailto:${profile.email}`,
+  jobTitle: 'Civil Engineering Undergraduate',
+  affiliation: { '@type': 'CollegeOrUniversity', name: 'Bangladesh University of Engineering and Technology' },
+  url: new URL(import.meta.env.BASE_URL, Astro.site).href,
+  sameAs: socials.map((s) => s.href),
+};
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <meta name="theme-color" content="#0a0f0d" />
+  <link rel="icon" href={`${base}/favicon.svg`} type="image/svg+xml" />
+  <link rel="canonical" href={new URL(import.meta.env.BASE_URL, Astro.site).href} />
+  <meta property="og:type" content="profile" />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:image" content={ogUrl} />
+  <meta name="twitter:card" content="summary" />
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  <script is:inline>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="nav">
+    <nav class="container nav-inner" aria-label="Main">
+      <a class="brand" href="#top">Hasibul<span>.</span></a>
+      <button class="menu-btn" aria-expanded="false" aria-controls="nav-links" aria-label="Toggle menu">
+        <Icon name="mdi:menu" width="22" height="22" />
+      </button>
+      <ul class="nav-links" id="nav-links">
+        {nav.map(([id, label]) => <li><a href={`#${id}`}>{label}</a></li>)}
+      </ul>
+    </nav>
+  </header>
+
+  <main id="main">
+    <!-- Hero -->
+    <div class="hero" id="top">
+      <div class="container">
+        <div class="hero-grid">
+          <div>
+            <span class="status"><span class="dot"></span>{profile.status}</span>
+            <h1>{profile.name}<span class="nick">({profile.nickname})</span></h1>
+            <p class="role">{profile.role}</p>
+            <p class="tagline">{profile.tagline}</p>
+            <p class="loc"><Icon name="mdi:map-marker-outline" width="18" height="18" />{profile.location}</p>
+            <div class="actions">
+              <a class="btn btn-primary" href={`mailto:${profile.email}`}><Icon name="mdi:email-outline" />Email me</a>
+              <a class="btn btn-ghost" href={profile.linkedin} target="_blank" rel="noopener"><Icon name="mdi:linkedin" />LinkedIn</a>
+              <a class="btn btn-ghost" href="#publications"><Icon name="mdi:file-document-outline" />Publications</a>
+            </div>
+          </div>
+          <div class="portrait">
+            <Picture
+              src={headshot}
+              alt={`Portrait of ${profile.name}`}
+              formats={['avif']}
+              fallbackFormat="webp"
+              quality={55}
+              widths={[220, 360, 440, 720]}
+              sizes="(max-width: 860px) 220px, 360px"
+              loading="eager"
+              fetchpriority="high"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- About -->
+    <section id="about">
+      <div class="container two-col">
+        <div class="reveal">
+          <p class="eyebrow">About</p>
+          <h2 class="section-title">Structural engineering, with code</h2>
+          <div class="prose">{about.map((p) => <p>{p}</p>)}</div>
+        </div>
+        <div class="card reveal">
+          <h3>Research interests</h3>
+          <ul class="tags">{interests.map((i) => <li>{i}</li>)}</ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Research -->
+    <section id="research">
+      <div class="container">
+        <p class="eyebrow">Research</p>
+        <h2 class="section-title">Current work & highlights</h2>
+
+        <article class="feature reveal">
+          <p class="eyebrow">Undergraduate thesis</p>
+          <h3 style="margin-top:8px">{thesis.title}</h3>
+          <p class="meta">Supervisor: {thesis.supervisor}</p>
+          <div class="body">
+            <p class="prose" style="color:#c9d6cf">{thesis.summary}</p>
+            <ul class="checks">{thesis.methods.map((m) => <li>{m}</li>)}</ul>
+          </div>
+        </article>
+
+        <article class="feature reveal">
+          <p class="eyebrow">Competition · {competition.role}</p>
+          <h3 style="margin-top:8px">{competition.title}</h3>
+          <p class="meta">{competition.where}</p>
+          <div class="body">
+            <div>
+              <p style="color:#c9d6cf">{competition.summary}</p>
+              <ul class="checks" style="margin-top:16px">{competition.points.map((p) => <li>{p}</li>)}</ul>
+              <a class="text-link" href={competition.link} target="_blank" rel="noopener">
+                Official results (PDF)<Icon name="mdi:arrow-top-right" />
+              </a>
+            </div>
+            <ul class="results">
+              {competition.results.map((r) => <li><Icon name="mdi:trophy-outline" /><span>{r}</span></li>)}
+            </ul>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Apps -->
+    <section id="apps">
+      <div class="container">
+        <p class="eyebrow">Software</p>
+        <h2 class="section-title">Apps I've built</h2>
+        {apps.filter((a) => a.featured).map((a) => (
+          <article class="feature app-feature reveal">
+            <div class="app-head">
+              <Image src={appIcons[a.icon as keyof typeof appIcons]} alt="" width={72} height={72} densities={[1, 2]} class="app-icon" />
+              <div>
+                <h3>{a.name}</h3>
+                <p class="meta" style="margin:4px 0 0">{a.tagline}</p>
+                <ul class="app-stats">{a.stats.map((s) => <li>{s}</li>)}</ul>
+              </div>
+            </div>
+            <div class="body">
+              <div>
+                <p style="color:#c9d6cf">{a.summary}</p>
+                <ul class="tags" style="margin-top:16px">{a.tech.map((t) => <li>{t}</li>)}</ul>
+                <a class="btn btn-primary" style="margin-top:20px" href={playUrl(a.playId)} target="_blank" rel="noopener">
+                  <Icon name="mdi:google-play" />Get it on Google Play
+                </a>
+              </div>
+              <ul class="checks">{a.features.map((f) => <li>{f}</li>)}</ul>
+            </div>
+          </article>
+        ))}
+        <div class="app-list">
+          {apps.filter((a) => !a.featured).map((a) => (
+            <a class="card app-card reveal" href={playUrl(a.playId)} target="_blank" rel="noopener">
+              <Image src={appIcons[a.icon as keyof typeof appIcons]} alt="" width={52} height={52} densities={[1, 2]} class="app-icon" />
+              <div>
+                <h3>{a.name}</h3>
+                <p>{a.summary}</p>
+                <span class="text-link" style="margin-top:8px">Google Play<Icon name="mdi:arrow-top-right" /></span>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Publications -->
+    <section id="publications">
+      <div class="container">
+        <p class="eyebrow">Publications</p>
+        <h2 class="section-title">Conference papers</h2>
+        <ol class="pubs">
+          {publications.map((p) => (
+            <li class="pub card reveal">
+              <div>
+                <h3>{p.title}</h3>
+                <p class="authors" set:html={highlightMe(p.authors)} />
+                <p class="venue"><em>{p.venue}</em><span>· {p.date}</span>{p.note && <span class="badge">{p.note}</span>}</p>
+                <p>{p.summary}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+
+    <!-- Experience & Education -->
+    <section id="experience">
+      <div class="container">
+        <p class="eyebrow">Background</p>
+        <h2 class="section-title">Experience & education</h2>
+        <div class="two-col even">
+          <div class="reveal">
+            <h3 class="sub-title">Experience</h3>
+            <ul class="timeline">
+              {experience.map((e) => (
+                <li>
+                  <h3>{e.title}</h3>
+                  <p class="org">{e.org}</p>
+                  <p class="period">{e.period}</p>
+                  <ul>{e.points.map((pt) => <li>{pt}</li>)}</ul>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div class="reveal">
+            <h3 class="sub-title">Education</h3>
+            <ul class="timeline">
+              {education.map((e) => (
+                <li>
+                  <h3>{e.degree}</h3>
+                  <p class="org">{e.school}</p>
+                  <p class="period">{e.period}</p>
+                  {e.details.length > 0 && <ul>{e.details.map((d) => <li>{d}</li>)}</ul>}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Skills -->
+    <section id="skills">
+      <div class="container">
+        <p class="eyebrow">Skills</p>
+        <h2 class="section-title">Tools I work with</h2>
+        <div class="skill-grid">
+          {skills.map((g) => (
+            <div class="card reveal">
+              <h3>{g.group}</h3>
+              <ul class="tags">{g.items.map((i) => <li>{i}</li>)}</ul>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="contact">
+      <div class="container reveal">
+        <p class="eyebrow">Contact</p>
+        <h2 class="section-title">Let's talk research</h2>
+        <p class="lead">I'm looking for PhD positions in structural engineering starting Fall 2027, and I'm always happy to talk about FRP, concrete or ML in civil engineering.</p>
+        <div class="actions">
+          <a class="btn btn-primary" href={`mailto:${profile.email}`}><Icon name="mdi:email-outline" />{profile.email}</a>
+        </div>
+        <ul class="socials">
+          {socials.map((s) => (
+            <li><a href={s.href} target="_blank" rel="noopener" aria-label={s.label} title={s.label}><Icon name={s.icon} /></a></li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">© {new Date().getFullYear()} {profile.name}</div>
+  </footer>
+
+  <script>
+    // Mobile menu
+    const btn = document.querySelector<HTMLButtonElement>('.menu-btn')!;
+    const links = document.getElementById('nav-links')!;
+    btn.addEventListener('click', () => {
+      const open = links.classList.toggle('open');
+      btn.setAttribute('aria-expanded', String(open));
+    });
+    links.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement).tagName === 'A') {
+        links.classList.remove('open');
+        btn.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    // Reveal on scroll + active nav link (one observer each, no scroll listeners)
+    const reveal = new IntersectionObserver((entries) => {
+      for (const e of entries) if (e.isIntersecting) { e.target.classList.add('in'); reveal.unobserve(e.target); }
+    }, { rootMargin: '0px 0px -10% 0px' });
+    document.querySelectorAll('.reveal').forEach((el) => reveal.observe(el));
+
+    const navLinks = new Map([...links.querySelectorAll('a')].map((a) => [a.hash.slice(1), a]));
+    const spy = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        navLinks.forEach((a) => a.removeAttribute('aria-current'));
+        navLinks.get(e.target.id)?.setAttribute('aria-current', 'true');
+      }
+    }, { rootMargin: '-45% 0px -50% 0px' });
+    document.querySelectorAll('section[id]').forEach((s) => spy.observe(s));
+  </script>
+</body>
+</html>
