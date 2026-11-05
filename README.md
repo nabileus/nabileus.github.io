@@ -2,7 +2,7 @@
 
 Personal website built with [Astro](https://astro.build) (static, near-zero JavaScript) and deployed to GitHub Pages.
 
-Live: https://nabileus.github.io/portfolio/
+Live: https://nabileus.github.io/
 
 ## Editing content
 
@@ -17,7 +17,7 @@ All text (about, research, publications, experience, education, skills, links) l
 
 ```bash
 npm install
-npm run dev       # http://localhost:4321/portfolio/ with live reload
+npm run dev       # http://localhost:4321/ with live reload
 npm run build     # outputs static site to dist/
 npm run preview   # serve the built site
 ```
@@ -25,7 +25,4 @@ npm run preview   # serve the built site
 ## Deployment
 
 `.github/workflows/deploy.yml` builds and deploys on every push to `main`.
-One-time setup: GitHub repo → **Settings → Pages → Source: GitHub Actions**.
-
-If you move to a custom domain or a `nabileus.github.io` repo, change `base` in
-`astro.config.mjs` to `'/'`.
+GitHub repo → Settings → Pages → Source is set to **GitHub Actions**.
